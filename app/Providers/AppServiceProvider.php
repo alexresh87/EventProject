@@ -25,8 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //Панигания в стиле bootstrap
         Paginator::useBootstrap();
 
+        //Директива для вывода только даты
         Blade::directive('onlydate', function ($expression) {
             return "<?php echo ($expression)->format('d.m.Y'); ?>";
         });

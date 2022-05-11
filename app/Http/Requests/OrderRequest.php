@@ -17,7 +17,7 @@ class OrderRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Валидация формы добавления/изменения заявки
      *
      * @return array
      */
@@ -34,6 +34,9 @@ class OrderRequest extends FormRequest
         ];
     }
 
+    /**
+     * тексты ошибок валидации
+     */
     public function messages(){
         return [
             'firstname.required' => 'Не указано имя',

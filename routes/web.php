@@ -19,6 +19,9 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+/**
+ * Пути для гостей
+ */
 Route::middleware('guest')->group(function(){
 
     Route::prefix('auth')
@@ -41,18 +44,23 @@ Route::middleware('guest')->group(function(){
 
     Route::prefix('orders')->group(function(){
 
+        //Страница с формой для создания заказа
         Route::get('create', [OrderController::class, 'create'])
             ->name('order.create');
 
+        //Добавление заявки в базу
         Route::post('store', [OrderController::class, 'store'])
             ->name('order.store');
 
     });
 });
 
-
+/**
+ * Пути для авторизованных пользователей
+ */
 Route::middleware('auth')->group(function(){
 
+    //Дашбоард с статистикой заявок по дням
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -61,6 +69,7 @@ Route::middleware('auth')->group(function(){
         ->name('auth.')
         ->group(function(){
 
+            //Выход из админки
             Route::get(
                 'logout',
                 [AuthController::class, 'logout']
@@ -68,17 +77,22 @@ Route::middleware('auth')->group(function(){
 
     });
 
+    //Пути простотра и изменения заявок
     Route::prefix('orders')->group(function(){
 
+        //Список заявок
         Route::get('get', [OrderController::class, 'index'])
             ->name('order.get');
 
+        //Страница обновления заявки
         Route::get('update/{id}', [OrderController::class, 'update'])
             ->name('order.update');
 
+        //Обновление заявки
         Route::post('update/{id}', [OrderController::class, 'updateSubmit'])
             ->name('order.updateSubmit');
 
+        //Получаем массив количества заявок по дням в заданном месяце и годе
         Route::get('get/{year}/{month}', [OrderController::class, 'getCountByMonth'])
             ->whereNumber('year')
             ->whereNumber('month')

@@ -13,6 +13,9 @@ class OrderController extends Controller
     const ROUTE_ORDER_INSERT = 'order.store';
     const ROUTE_ORDER_UPDATE = 'order.updateSubmit';
 
+    /**
+     * Вывод списка заявок для менеджера из личного кабинета
+     */
     public function index(Request $request){
 
         //Всего записей в таблице
@@ -20,6 +23,8 @@ class OrderController extends Controller
 
         //Строка для поиска по таблице
         $search = $request->query('search', "");
+
+        //Если строка не пустая, то ищем по всем столбцам совпадение
         if($search){
             $search_str = '%'.$search.'%';
             $orders = Order::where('lastname','LIKE', $search_str)
@@ -33,6 +38,8 @@ class OrderController extends Controller
         }else{
             $orders = Order::orderBy('created_at','desc');
         }
+
+        //Разбиваем вывод по DEFAULT_ORDERS_PER_PAGE записей
         $orders = $orders->paginate(self::DEFAULT_ORDERS_PER_PAGE);
 
         return view('orders.list',[
@@ -68,15 +75,23 @@ class OrderController extends Controller
         return json_encode(array_values($ret_arr));
     }
 
+    /**
+     * Страница создания заявки для guest
+     */
     public function create(){
         return view('orders.create')
             ->with("route_name", self::ROUTE_ORDER_INSERT);
     }
 
+
+    /**
+     * Добавление заявки для guest
+     */
     public function store(OrderRequest $request){
 
         $order = new Order();
 
+        //Заполняем все поля
         $order->firstname = trim($request->input('firstname'));
         $order->lastname = trim($request->input('lastname'));
         $order->patronymic = trim($request->input('patronymic'));
@@ -85,13 +100,18 @@ class OrderController extends Controller
         $order->phone = preg_replace('~\D+~','', trim($request->input('phone')));
         $order->email = trim($request->input('email'));
         
+        //Добавляем в базу
         $order->save();
 
+        //Переадресация на главную страницу 
         return redirect()
             ->route('home')
             ->with('success_message','Заявка была принята');
     }
 
+    /**
+     * Страница обновления заявки для менеджера
+     */
     public function update($id){
 
         $order = Order::find($id);
@@ -102,9 +122,13 @@ class OrderController extends Controller
             ]);
     }
 
+    /**
+     * Обновление заявки для менеджера
+     */
     public function updateSubmit($id, OrderRequest $request){
         $order = Order::find($id);
-        
+
+        //Обновляем все поля
         $order->firstname = $request->input('firstname');
         $order->lastname = $request->input('lastname');
         $order->patronymic = $request->input('patronymic');
@@ -113,8 +137,10 @@ class OrderController extends Controller
         $order->phone = $request->input('phone');
         $order->email = $request->input('email');
         
+        //Сохраняем изменения
         $order->save();
 
+        //Переходим к списку заявок с сообщением об успешном редактировании
         return redirect()
             ->route('order.get')
             ->with('success_message','Запись была обновлена');

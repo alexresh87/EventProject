@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\DTO\OrderFormDTO;
 use Illuminate\Http\Request;
+use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
-use App\Models\Order;
 
 class OrderController extends Controller
 {
@@ -87,21 +89,11 @@ class OrderController extends Controller
     /**
      * Добавление заявки для guest
      */
-    public function store(OrderRequest $request){
+    public function store(OrderRequest $request, OrderService $orderService){
 
-        $order = new Order();
+        $orderData = new OrderFormDTO($request->validated());
 
-        //Заполняем все поля
-        $order->firstname = trim($request->input('firstname'));
-        $order->lastname = trim($request->input('lastname'));
-        $order->patronymic = trim($request->input('patronymic'));
-        $order->city = trim($request->input('city'));
-        $order->address = trim($request->input('address'));
-        $order->phone = preg_replace('~\D+~','', trim($request->input('phone')));
-        $order->email = trim($request->input('email'));
-        
-        //Добавляем в базу
-        $order->save();
+        $orderService->storeOrder($orderData);
 
         //Переадресация на главную страницу 
         return redirect()

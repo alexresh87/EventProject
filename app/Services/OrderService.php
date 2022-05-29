@@ -7,7 +7,8 @@ use App\DTO\OrderFormDTO;
 
 class OrderService
 {
-    public function storeOrder(OrderFormDTO $orderForm){
+    public function storeOrder(OrderFormDTO $orderForm)
+    {
         return Order::create($orderForm->all());
     }
 }

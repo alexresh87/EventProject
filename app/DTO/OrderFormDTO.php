@@ -1,9 +1,11 @@
 <?php
+
 namespace App\DTO;
 
 use Spatie\DataTransferObject\DataTransferObject;
 
-class OrderFormDTO extends DataTransferObject{
+class OrderFormDTO extends DataTransferObject
+{
     public string $firstname;
     public string $lastname;
     public string $patronymic;

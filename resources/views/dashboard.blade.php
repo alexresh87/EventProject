@@ -20,8 +20,15 @@
 
         $("#chart1-select").on("change", function(){
             var month = this.value;
-            $.get(`/orders/get/2022/${month}`, function(data){
-                window.chart.set(JSON.parse(data));
+            $.getJSON(`/orders/get/2022/${month}`, function(response){
+                if(response.status == undefined){
+                    return;
+                }
+                if(response.status != 'success'){
+                    return;
+                }
+
+                window.chart.set(response.data);
                 window.chart.month = month;
                 window.chart.draw();
             });
